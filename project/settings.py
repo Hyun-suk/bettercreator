@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'creators.apps.CreatorsConfig',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -121,7 +122,37 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 from dotenv import load_dotenv
-load_dotenv()
+dotenv_path = os.path.join(BASE_DIR, '.env')
+load_dotenv(dotenv_path)
 
 GOOGLE_KEY = os.getenv('GOOGLE_KEY')
 GOOGLE_SECRET = os.getenv('GOOGLE_SECRET')
+
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.google.GoogleOAuth',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+LOGIN_URL = '/auth/login/google-oauth2/'
+LOGIN_REDIRECT_URL='/creators'
+LOGOUT_REDIRECT_URL = '/creators'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = GOOGLE_KEY
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_SECRET
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'email',
+    'profile',
+    'https://www.googleapis.com/auth/yt-analytics.readonly',
+    'https://www.googleapis.com/auth/yt-analytics-monetary.readonly',
+    'https://www.googleapis.com/auth/youtube',
+    'https://www.googleapis.com/auth/youtube.readonly',
+    'https://www.googleapis.com/auth/youtubepartner',
+    'https://www.googleapis.com/auth/youtube.force-ssl'
+]
+
+SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
+    'access_type': 'offline'
+}

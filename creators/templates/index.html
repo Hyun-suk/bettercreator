@@ -3,6 +3,15 @@
 {% block content %}
   <div class="jumbotron">
     <h1>Better creators</h1>
+    {% if user.is_authenticated %}
+      <p>Logged as {{ user.username }}</p>
+      <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
+    {% else %}
+      <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">
+        Login
+      </a>
+    {% endif %}
+  </div>
   </div>
   <div class="container-fluid">
     Content
