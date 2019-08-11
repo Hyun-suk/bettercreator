@@ -7,7 +7,7 @@
     <h2> 채널 정보 </h2>
     <div class="list-group">
       {% for item in channel_items %}
-        <a class="list-group-item list-group-item-action flex-column align-items-start">
+        <a href="{% url 'creators:detail' item.id %}" class="list-group-item list-group-item-action flex-column align-items-start">
           <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">채널 {{ item.snippet.title }}</h5>
             <img src="{{ item.snippet.thumbnails.default.url }}"/> <br><br>

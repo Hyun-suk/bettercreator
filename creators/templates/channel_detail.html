@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load creator_filters %}
+
+{% block accounts %}
+  <nav class="navbar navbar-expand-lg navbar-light bg-light  justify-content-between">
+    <h1>Channel Information</h1>
+    <p>
+      {% if user.is_authenticated %}
+        Logged as {{ user.username }}
+        <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
+      {% else %}
+        <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">
+          Login
+        </a>
+        {% endif %}
+    </p>
+  </nav>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class='row'>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">예상 수익</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{result.1}}</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-dollar-sign fa-2x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">구독자 수</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{result.2|sub:result.3}}</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-users fa-2x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">조회수</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{result.4}}</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-tv fa-2x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">평균시청시간</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{result.5}}</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-user-clock fa-2x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
