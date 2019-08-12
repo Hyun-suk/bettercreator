@@ -70,12 +70,32 @@ def detail(request, channel_id):
         params=params
     )
 
-    result = json.loads(response.text)['rows'][0]
+    channel_info = json.loads(response.text)['rows'][0]
+
+    params = {
+        'ids': 'channel=={}'.format(channel_id),
+        'dimensions': 'insightTrafficSourceDetail',
+        'startDate': str(start_date),
+        'endDate': str(end_date),
+        'metrics': 'views,estimatedMinutesWatched',
+        'filters': 'insightTrafficSourceType==YT_SEARCH',
+        'maxResults': 10,
+        'sort': '-views',
+        'access_token': access_token,
+    }
+
+    response = requests.get(
+        'https://youtubeanalytics.googleapis.com/v2/reports',
+        params=params
+    )
+
+    traffic_sources = json.loads(response.text)['rows']
 
     return render(
         request,
         'channel_detail.html',
         {
-            'result': result,
+            'channel_info': channel_info,
+            'traffic_sources': traffic_sources
         }
     )
