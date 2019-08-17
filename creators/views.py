@@ -56,6 +56,18 @@ def detail(request, channel_id):
     start_date = date.today() - relativedelta(months=1, days=1)
     end_date = date.today() - relativedelta(months=0, days=1)
 
+
+    return render(
+        request,
+        'channel_detail.html',
+        {
+            'channel_info': get_channel_info(access_token, channel_id, start_date, end_date),
+            'view_traffic_infos': get_view_traffic_info(access_token, channel_id, start_date, end_date),
+            'watched_traffic_infos': get_watched_traffic_info(access_token, channel_id, start_date, end_date)
+        }
+    )
+
+def get_channel_info(access_token, channel_id, start_date, end_date):
     params = {
         'ids': 'channel=={}'.format(channel_id),
         'dimensions': 'channel',
@@ -70,10 +82,9 @@ def detail(request, channel_id):
         params=params
     )
 
-    channel_info = json.loads(response.text)['rows'][0]
+    return json.loads(response.text)['rows'][0]
 
-
-    total_views = 0
+def get_view_traffic_info(access_token, channel_id, start_date, end_date):
 
     params = {
         'ids': 'channel=={}'.format(channel_id),
@@ -94,11 +105,15 @@ def detail(request, channel_id):
 
     view_traffic_sources = json.loads(response.text)['rows']
 
-
-    total_watched = 0
-
+    total_views = 0
     for traffic_source in view_traffic_sources:
         total_views += traffic_source[1]
+
+    view_traffic_infos = [(view_traffic_source[0], view_traffic_source[1]/total_views) for view_traffic_source in view_traffic_sources]
+
+    return view_traffic_infos
+
+def get_watched_traffic_info(access_token, channel_id, start_date, end_date):
 
     params = {
         'ids': 'channel=={}'.format(channel_id),
@@ -117,24 +132,12 @@ def detail(request, channel_id):
         params=params
     )
 
-
     watched_traffic_sources = json.loads(response.text)['rows']
 
+    total_watched = 0
     for traffic_source in watched_traffic_sources:
         total_watched += traffic_source[1]
 
-    view_traffic_infos = list()
-    watched_traffic_infos = list()
+    watched_traffic_infos = [(watched_traffic_source[0], watched_traffic_source[1]/total_watched) for watched_traffic_source in watched_traffic_sources]
 
-    view_traffic_infos = [(view_traffic_source[0], view_traffic_source[1]/total_views) for view_traffic_source in view_traffic_sources]
-    watched_traffic_infos = [(watched_traffic_source[0], watched_traffic_source[1]/total_views) for watched_traffic_source in watched_traffic_sources]
-
-    return render(
-        request,
-        'channel_detail.html',
-        {
-            'channel_info': channel_info,
-            'view_traffic_infos': view_traffic_infos,
-            'watched_traffic_infos': watched_traffic_infos
-        }
-    )
+    return watched_traffic_infos
