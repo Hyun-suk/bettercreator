@@ -72,14 +72,17 @@ def detail(request, channel_id):
 
     channel_info = json.loads(response.text)['rows'][0]
 
+
+    total_views = 0
+
     params = {
         'ids': 'channel=={}'.format(channel_id),
         'dimensions': 'insightTrafficSourceDetail',
         'startDate': str(start_date),
         'endDate': str(end_date),
-        'metrics': 'views,estimatedMinutesWatched',
+        'metrics': 'views',
         'filters': 'insightTrafficSourceType==YT_SEARCH',
-        'maxResults': 10,
+        'maxResults': 25,
         'sort': '-views',
         'access_token': access_token,
     }
@@ -89,13 +92,49 @@ def detail(request, channel_id):
         params=params
     )
 
-    traffic_sources = json.loads(response.text)['rows']
+    view_traffic_sources = json.loads(response.text)['rows']
+
+
+    total_watched = 0
+
+    for traffic_source in view_traffic_sources:
+        total_views += traffic_source[1]
+
+    params = {
+        'ids': 'channel=={}'.format(channel_id),
+        'dimensions': 'insightTrafficSourceDetail',
+        'startDate': str(start_date),
+        'endDate': str(end_date),
+        'metrics': 'estimatedMinutesWatched',
+        'filters': 'insightTrafficSourceType==YT_SEARCH',
+        'maxResults': 25,
+        'sort': '-estimatedMinutesWatched',
+        'access_token': access_token,
+    }
+
+    response = requests.get(
+        'https://youtubeanalytics.googleapis.com/v2/reports',
+        params=params
+    )
+
+
+    watched_traffic_sources = json.loads(response.text)['rows']
+
+    for traffic_source in watched_traffic_sources:
+        total_watched += traffic_source[1]
+
+    view_traffic_infos = list()
+    watched_traffic_infos = list()
+
+    view_traffic_infos = [(view_traffic_source[0], view_traffic_source[1]/total_views) for view_traffic_source in view_traffic_sources]
+    watched_traffic_infos = [(watched_traffic_source[0], watched_traffic_source[1]/total_views) for watched_traffic_source in watched_traffic_sources]
 
     return render(
         request,
         'channel_detail.html',
         {
             'channel_info': channel_info,
-            'traffic_sources': traffic_sources
+            'view_traffic_infos': view_traffic_infos,
+            'watched_traffic_infos': watched_traffic_infos
         }
     )

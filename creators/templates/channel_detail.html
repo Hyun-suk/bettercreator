@@ -84,16 +84,42 @@
         </div>
       </div>
     </div>
+
+    <div class='row'>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">검색어 Top25 (조회수)</div>
+        <div class="mb-0 text-gray-800 overflow-auto h-50">
+          <ul class="list-group">
+            {% for info in view_traffic_infos %}
+            <li class="list-group-item py-1">
+              <div class="row">
+                <div class="col">{{info.0}}</div>
+                <div class="col-auto">{{info.1|percent}}</div>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">검색어 Top25 (시청시간)</div>
+        <div class="mb-0 text-gray-800 overflow-auto h-50">
+          <ul class="list-group">
+            {% for info in watched_traffic_infos %}
+            <li class="list-group-item py-1">
+              <div class="row">
+                <div class="col">{{info.0}}</div>
+                <div class="col-auto">{{info.1|percent}}</div>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div class='row'>
-    <div class="col-xl-3 col-md-6 mb-4">
-      <ul class="list-group">
-        {% for source in traffic_sources %}
-          <li class="list-group-item">{{source.0}} - {{source.1}} - {{source.2}}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
 
 {% endblock %}
