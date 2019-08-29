@@ -23,26 +23,17 @@ def channels(request):
     request.session['access_token'] = social.extra_data['access_token']
     access_token = request.session['access_token']
 
-    params = {
-        'mine': True,
-        'part': 'id,snippet',
-        'access_token': request.session['access_token'],
-    }
-
-    response = requests.get(
-        'https://www.googleapis.com/youtube/v3/channels',
-        params=params
-    )
-
-    items = json.loads(response.text)['items']
+    channel_items = get_channel_items(access_token)
+    request.session['channel_items'] = channel_items
 
     return render(
         request,
         'channels.html',
         {
-            'channel_items': items,
+            'channel_items': channel_items
         }
     )
+
 
 @login_required
 def detail(request, channel_id):
@@ -56,18 +47,23 @@ def detail(request, channel_id):
     start_date = date.today() - relativedelta(months=1, days=1)
     end_date = date.today() - relativedelta(months=0, days=1)
 
+    channel_items = request.session['channel_items']
+    for num, item in enumerate(channel_items):
+        if item['id'] == channel_id:
+            break
 
     return render(
         request,
         'channel_detail.html',
         {
-            'channel_info': get_channel_info(access_token, channel_id, start_date, end_date),
+            'channel_item': channel_items[num],
+            'channel_info': get_channel_analytics_info(access_token, channel_id, start_date, end_date),
             'view_traffic_infos': get_view_traffic_info(access_token, channel_id, start_date, end_date),
             'watched_traffic_infos': get_watched_traffic_info(access_token, channel_id, start_date, end_date)
         }
     )
 
-def get_channel_info(access_token, channel_id, start_date, end_date):
+def get_channel_analytics_info(access_token, channel_id, start_date, end_date):
     params = {
         'ids': 'channel=={}'.format(channel_id),
         'dimensions': 'channel',
@@ -141,3 +137,17 @@ def get_watched_traffic_info(access_token, channel_id, start_date, end_date):
     watched_traffic_infos = [(watched_traffic_source[0], watched_traffic_source[1]/total_watched) for watched_traffic_source in watched_traffic_sources]
 
     return watched_traffic_infos
+
+def get_channel_items(access_token):
+    params = {
+        'part': 'id,snippet,statistics',
+        'mine': True,
+        'access_token': access_token,
+    }
+
+    response = requests.get(
+        'https://www.googleapis.com/youtube/v3/channels',
+        params=params
+    )
+
+    return json.loads(response.text)['items']

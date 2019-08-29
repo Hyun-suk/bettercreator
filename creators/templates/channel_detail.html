@@ -42,7 +42,13 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">구독자 수</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{channel_info.2|sub:channel_info.3}}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{channel_item.statistics.subscriberCount}}
+                  {% if channel_info.2|sub:channel_info.3 < 0 %}
+                    <small class="text-danger">({{channel_info.2|sub:channel_info.3}})</small>
+                  {% else %}
+                    <small class="text-primary">({{channel_info.2|sub:channel_info.3}})</small>
+                  {% endif %}
+                </div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-users fa-2x"></i>
