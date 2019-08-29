@@ -59,7 +59,8 @@ def detail(request, channel_id):
             'channel_item': channel_items[num],
             'channel_info': get_channel_analytics_info(access_token, channel_id, start_date, end_date),
             'view_traffic_infos': get_view_traffic_info(access_token, channel_id, start_date, end_date),
-            'watched_traffic_infos': get_watched_traffic_info(access_token, channel_id, start_date, end_date)
+            'watched_traffic_infos': get_watched_traffic_info(access_token, channel_id, start_date, end_date),
+            'most_watched_videos': get_most_watched_videos(access_token, start_date, end_date)
         }
     )
 
@@ -151,3 +152,42 @@ def get_channel_items(access_token):
     )
 
     return json.loads(response.text)['items']
+
+def get_most_watched_videos(access_token, start_date, end_date):
+    params = {
+        'dimensions': 'video',
+        'ids': 'channel==MINE',
+        'metrics': 'estimatedMinutesWatched,views,likes,subscribersGained',
+        'maxResults': 10,
+        'sort': '-estimatedMinutesWatched',
+        'access_token': access_token,
+        'startDate': str(start_date),
+        'endDate': str(end_date),
+    }
+
+    response = requests.get(
+        'https://youtubeanalytics.googleapis.com/v2/reports',
+        params=params
+    )
+
+    most_watched_videos = json.loads(response.text)['rows']
+
+    ids = list()
+    for video in most_watched_videos:
+        ids.append(video[0])
+    ids = ','.join(ids)
+
+    params = {
+        'part': 'snippet',
+        'id': ids,
+        'access_token': access_token,
+    }
+
+    response = requests.get(
+        'https://www.googleapis.com/youtube/v3/videos',
+        params=params
+    )
+
+    video_infos = json.loads(response.text)['items']
+
+    return zip(most_watched_videos, video_infos)
