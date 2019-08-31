@@ -139,6 +139,22 @@
           </ul>
         </div>
       </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">외부 트래픽 (조회수)</div>
+        <div class="mb-0 text-gray-800 overflow-auto h-50">
+          <ul class="list-group">
+            {% for traffic in external_traffics %}
+              <li class="list-group-item py-1">
+                <div class="row">
+                  <div class="col">{{traffic.0}}</div>
+                  <div class="col-auto">{{traffic.2}}</div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
     </div>
 
   </div>

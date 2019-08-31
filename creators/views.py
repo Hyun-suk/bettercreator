@@ -60,7 +60,8 @@ def detail(request, channel_id):
             'channel_info': get_channel_analytics_info(access_token, channel_id, start_date, end_date),
             'view_traffic_infos': get_view_traffic_info(access_token, channel_id, start_date, end_date),
             'watched_traffic_infos': get_watched_traffic_info(access_token, channel_id, start_date, end_date),
-            'most_watched_videos': get_most_watched_videos(access_token, start_date, end_date)
+            'most_watched_videos': get_most_watched_videos(access_token, start_date, end_date),
+            'external_traffics': get_external_traffics(access_token, channel_id, start_date, end_date),
         }
     )
 
@@ -191,3 +192,23 @@ def get_most_watched_videos(access_token, start_date, end_date):
     video_infos = json.loads(response.text)['items']
 
     return zip(most_watched_videos, video_infos)
+
+def get_external_traffics(access_token, channel_id, start_date, end_date):
+    params = {
+        'dimensions': 'insightTrafficSourceDetail',
+        'ids': 'channel=={}'.format(channel_id),
+        'metrics': 'estimatedMinutesWatched,views',
+        'filters': 'insightTrafficSourceType==EXT_URL',
+        'maxResults': 25,
+        'sort': '-views',
+        'access_token': access_token,
+        'startDate': str(start_date),
+        'endDate': str(end_date),
+    }
+
+    response = requests.get(
+        'https://youtubeanalytics.googleapis.com/v2/reports',
+        params=params
+    )
+
+    return json.loads(response.text)['rows']
