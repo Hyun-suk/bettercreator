@@ -82,6 +82,24 @@ def get_channel_analytics_info(access_token, channel_id, start_date, end_date):
 
     return json.loads(response.text)['rows'][0]
 
+def get_viewer_info(access_token, channel_id, start_date, end_date):
+    params = {
+        'ids': 'channel=={}'.format(channel_id),
+        'dimensions': 'ageGroup,gender',
+        'startDate': str(start_date),
+        'endDate': str(end_date),
+        'metrics': 'viewerPercentage',
+        'filters': 'isCurated==1',
+        'access_token': access_token,
+    }
+
+    response = requests.get(
+        'https://youtubeanalytics.googleapis.com/v2/reports',
+        params=params
+    )
+
+    return json.loads(response.text)['rows'][0]
+
 def get_view_traffic_info(access_token, channel_id, start_date, end_date):
 
     params = {
